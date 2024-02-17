@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VetValue</title>
+    <script
+        src="https://maps.googleapis.com/maps/api/js?key=AIzaSyB41DRUbKWJHPxaFjMAwdrzWzbVKartNGg&callback=initMap&libraries=places&v=weekly"></script>
+    <style>
+        #map {
+            height: 600px;
+            width: 90%;
+            margin: auto;
+        }
+    </style>
+</head>
+
+<!-- 
+
+    Search Terms
+
+
+
+                        [MAP]
+
+    -------------------------------------------
+    |    Clinic Name                 Address  |
+    |    Dr's Name                            |
+    |    xxx Miles Away                       |
+    |    Phone Number                         |
+    -------------------------------------------
+ -->
+
+<body>
+    <h3>VetValue</h3>
+
+    <!-- Prompts the user to enter their location -->
+
+    <input type="text" id="locationInput" placeholder="Enter location">
+
+    <!-- Prompts user to choose from list of animals -->
+
+    <select id="animalDropdown" aria-label="Select an animal" onchange="displaySelectedAnimal()">
+        <option value="" disabled selected>Select an animal</option>
+        <option value="Dog">Dog</option>
+        <option value="Cat">Cat</option>
+        <option value="Fish">Fish</option>
+        <option value="Bird">Bird</option>
+        <option value="Rodent">Rodent</option>
+        <option value="Lizard">Lizard</option>
+        <option value="Snake">Snake</option>
+        <option value="Amphibian">Amphibian</option>
+        <option value="Turtle">Turtle</option>
+        <option value="Tortoise">Tortoise</option>
+        <option value="Rabbit">Rabbit</option>
+        <option value="Marsupial">Marsupial</option>
+        <option value="Hedgehog">Hedgehog</option>
+        <option value="Invertebrate">Invertebrate</option>
+        <option value="Caiman">Caiman</option>
+        <option value="Ferret">Ferret</option>
+        <option value="Fox">Fox</option>
+        <option value="Pig">Pig</option>
+        <option value="Goat">Goat</option>
+        <option value="Chicken">Chicken</option>
+        <option value="Cow">Cow</option>
+    </select>
+
+    <button onclick="findPlaceId()">Search</button>
+    <p id="placeIdResult"></p>
+
+    <script>
+
+        // Finds the location
+        function findPlaceId() {
+            const userLocation = document.getElementById('locationInput').value;
+            const service = new google.maps.places.PlacesService(document.createElement('div'));
+
+            service.textSearch({ query: userLocation }, (results, status) => {
+                if (status === google.maps.places.PlacesServiceStatus.OK && results.length > 0) {
+                    const placeId = results[0].place_id;
+                    const location = results[0].geometry.location;
+                    const coordinates = { lat: location.lat(), lng: location.lng() };
+
+                    initMap(coordinates);
+                    findNearestAnimalHospital(coordinates);
+                } else {
+                    document.getElementById('placeIdResult').innerText = 'Place ID not found';
+                }
+            });
+        }
+
+
+        // Plugs in coordinates
+        function initMap(coordinates) {
+            const center = coordinates;
+            const map = new google.maps.Map(document.getElementById('map'), {
+                center: center,
+                zoom: 14
+            });
+        }
+
+
+        // Finds nearest animal hospital
+        function findNearestAnimalHospital(userLocation) {
+            const service = new google.maps.places.PlacesService(document.createElement('div'));
+            const request = {
+                location: userLocation,
+                radius: 40234, // 25 miles in meters
+                keyword: 'veterinary clinic, animal hospital, vet',
+                type: 'veterinary_care_for_' + animalDropdown.value // Search for veterinary care places
+            };
+
+            console.log("Searching for: " + animalDropdown.value);
+
+
+            // Finds cheapest hospital that is nearby
+            service.nearbySearch(request, (results, status) => {
+                if (status === google.maps.places.PlacesServiceStatus.OK && results.length > 0) {
+                    for (let i = 0; i < results.length; i++) {
+                        const hospital = results[i];
+                        console.log("Hospital Name: " + hospital.name);
+
+                        document.getElementById('hospitalNamePlaceholder').innerText = hospital.name;
+
+
+                        if (hospital.doctor) {
+                            console.log("Dr's Name: " + hospital.doctor);
+                        } else {
+                            console.log(hospital.doctor = "Dr's Name: Not available");
+                        }
+
+                        document.getElementById('hospitalDoctorPlaceholder').innerText = hospital.doctor;
+
+                        console.log("Address: " + hospital.vicinity);
+
+                        document.getElementById('hospitalDistancePlaceholder').innerText = hospital.vicinity;
+
+                        console.log("Distance: " + hospital.geometry.location.toString());
+                        console.log("Place ID: " + hospital.place_id);
+                        console.log("-----------------------------");
+                    }
+
+                    const nearestHospital = results[0];
+                    displayDirections(userLocation, nearestHospital.geometry.location);
+                } else {
+                    document.getElementById('placeIdResult').innerText = 'No animal hospital found nearby';
+                }
+            });
+        }
+
+        // Calculates directions to get to location
+        function displayDirections(origin, destination) {
+            const directionsService = new google.maps.DirectionsService();
+            const directionsRenderer = new google.maps.DirectionsRenderer();
+            const map = new google.maps.Map(document.getElementById('map'), {
+                zoom: 14,
+                center: origin
+            });
+
+            directionsRenderer.setMap(map);
+
+            const request = {
+                origin: origin,
+                destination: destination,
+                travelMode: google.maps.TravelMode.DRIVING
+            };
+
+            directionsService.route(request, (result, status) => {
+                if (status == 'OK') {
+                    directionsRenderer.setDirections(result);
+                } else {
+                    document.getElementById('placeIdResult').innerText = 'Error fetching directions';
+                }
+            });
+        }
+    </script>
+
+    <div id="map"></div>
+
+
+    <!-- Displays details (Temporary) -->
+    <h2>Details</h2>
+
+    <h3 id="hospitalNamePlaceholder"></h3>
+    <h3 id="hospitalDoctorPlaceholder"></h3>
+    <h3 id="hospitalDistancePlaceholder"></h3>
+    <h3 id="hospitalAddressPlaceholder"></h3>
+
+</body>
+
+</html>
