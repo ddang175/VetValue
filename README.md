@@ -4,6 +4,16 @@
 
 VetFinder is an ambitious hackathon project aimed at simplifying the search for specialized veterinary care, with a particular focus on exotic pets. While designed to cater to all pet owners, our mission is to ensure that owners of less common pets have equal access to quality care. The project leverages a React frontend, Flask backend, and MongoDB for data storage but remains a work in progress. Our goal is to create a seamless, user-friendly platform that connects pet owners with the right veterinarians in their area.
 
+## Figma
+
+https://www.figma.com/file/JOoQrtHd5IRbROWvmZf3Yw/VetFinder?type=design&node-id=17%3A13&mode=design&t=1Ylv1QsJ5XSNhwaQ-1
+
+## Frontend(Didn't have time to implement all Figma details)
+
+![alt text]./VetValueHome.png "Home")
+
+![alt text](./VetValueSearch.png "Search")
+
 ## Current Features
 
 - **Basic Search Functionality**: Users can input their location to find nearby veterinarians, but filtering by specialty and pet type is still under development.
