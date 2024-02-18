@@ -8,11 +8,6 @@ VetFinder is an ambitious hackathon project aimed at simplifying the search for 
 
 https://www.figma.com/file/JOoQrtHd5IRbROWvmZf3Yw/VetFinder?type=design&node-id=17%3A13&mode=design&t=1Ylv1QsJ5XSNhwaQ-1
 
-## Frontend(Didn't have time to implement all Figma details)
-
-![alt text]./VetValueHome.png "Home")
-
-![alt text](./VetValueSearch.png "Search")
 
 ## Current Features
 
